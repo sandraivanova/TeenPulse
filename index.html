@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeenPulse - Интерактивна Платформа</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-main: #e0f2fe;
+            --sidebar-bright: #f0f9ff;
+            --text-dark: #0f172a;
+            --text-sidebar: #0369a1;
+            --neon-mix: linear-gradient(135deg, #38bdf8, #0369a1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            user-select: none;
+        }
+
+        .sidebar {
+            background: var(--sidebar-bright);
+            min-height: 100vh;
+            border-right: 3px solid #bae6fd;
+            position: fixed;
+            width: 280px;
+            z-index: 100;
+            box-shadow: 4px 0 15px rgba(3, 105, 161, 0.05);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-sidebar);
+            text-decoration: none;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background: #bae6fd;
+            color: #0c4a6e;
+            transform: translateX(5px);
+        }
+
+        .app-card {
+            background: #f8fafc;
+            border: 2px solid #bae6fd;
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 20px rgba(3, 105, 161, 0.06);
+        }
+
+        .gradient-banner {
+            background: var(--neon-mix);
+            border-radius: 24px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(3, 105, 161, 0.15);
+        }
+
+        .crystal-deck {
+            display: flex;
+            justify-content: space-around;
+            background: #e0f2fe;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+            min-height: 250px;
+            align-items: center;
+            border: 2px solid #bae6fd;
+        }
+
+        .crystal-box {
+            text-align: center;
+            width: 30%;
+            perspective: 1000px;
+        }
+
+        .crystal-element {
+            font-size: 3.8rem;
+            display: inline-block;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center bottom;
+        }
+
+        .cry-state-grow {
+            transform: scale(1.5);
+            animation: floatCrystal 2.5s ease-in-out infinite alternate;
+        }
+        .glow-sleep { filter: drop-shadow(0 0 20px #a855f7); } /* Виолетова */
+        .glow-screen { filter: drop-shadow(0 0 20px #06b6d4); } /* Цијан сина */
+        .glow-sport { filter: drop-shadow(0 0 20px #ec4899); } /* Розова */
+
+        .cry-state-shrink {
+            transform: scale(0.6);
+            filter: grayscale(50%) opacity(0.6);
+        }
+
+        .cry-state-shatter {
+            animation: shatterShake 0.15s infinite alternate;
+            filter: grayscale(90%) brightness(0.7);
+            transform: scale(0.9) rotate(35deg);
+        }
+
+        @keyframes floatCrystal {
+            0% { transform: scale(1.5) translateY(0px); }
+            100% { transform: scale(1.5) translateY(-12px); }
+        }
+
+        @keyframes shatterShake {
+            0% { transform: scale(0.9) rotate(33deg) translateX(-1px); }
+            100% { transform: scale(0.9) rotate(37deg) translateX(1px); }
+        }
+
+        .form-range::-webkit-slider-runnable-track {
+            background: #bae6fd;
+            border-radius: 10px;
+            height: 8px;
+        }
+        .form-range::-webkit-slider-thumb {
+            background: #0284c7;
+        }
+
+        .badge-blue-dark {
+            background-color: #0284c7;
+            color: white;
+            font-weight: 700;
+        }
+
+        .breath-box {
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .breath-circle {
+            width: 120px;
+            height: 120px;
+            background: var(--neon-mix);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            transition: all 4s ease-in-out;
+            box-shadow: 0 8px 25px rgba(3, 105, 161, 0.2);
+        }
+
+        .breath-circle.expand {
+            width: 240px;
+            height: 240px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            box-shadow: 0 12px 40px rgba(3, 105, 161, 0.4);
+        }
+
+        .bubble-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 14px;
+            max-width: 380px;
+            margin: 20px auto;
+        }
+
+        .bubble {
+            width: 48px;
+            height: 48px;
+            background: radial-gradient(circle at 30% 30%, #38bdf8, #0284c7);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
+            border: 1px solid #7dd3fc;
+        }
+
+        .bubble.popped {
+            background: #cbd5e1;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+            transform: scale(0.8);
+            pointer-events: none;
+            border: none;
+        }
+
+        .punch-bag {
+            font-size: 7rem;
+            cursor: pointer;
+            display: inline-block;
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 320px;
+            background: #bae6fd;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.08);
+            border: 2px solid #7dd3fc;
+        }
+
+        .falling-habit {
+            position: absolute;
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Копчиња */
+        .btn-blue-main {
+            background: var(--neon-mix);
+            color: white;
+            border: none;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(3, 105, 161, 0.15);
+            transition: all 0.3s ease;
+        }
+        .btn-blue-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(3, 105, 161, 0.25);
+            color: white;
+        }
+
+        .btn-outline-blue-dark {
+            color: #0284c7;
+            border: 2px solid #0284c7;
+            background: transparent;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+        .btn-outline-blue-dark:hover {
+            background: var(--neon-mix);
+            color: white;
+            border-color: transparent;
+        }
+
+        .app-page { display: none; }
+        .app-page.active-page { display: block; animation: slideUp 0.4s ease; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar p-4 d-flex flex-column">
+    <div class="d-flex align-items-center mb-4 px-2">
+        <i class="fa-solid fa-wand-magic-sparkles text-primary fs-3 me-2"></i>
+        <span class="fs-4 fw-bold" style="color: #0369a1;">TeenPulse</span>
+    </div>
+    <hr style="background-color: #bae6fd; height: 2px; opacity: 1;">
+    <nav class="nav flex-column flex-grow-1">
+        <a href="#" class="nav-link-custom active" onclick="switchPage('crystals-tab', this)"><i class="fa-solid fa-gem me-3"></i>Кристален Баланс</a>
+        <a href="#" class="nav-link-custom" onclick="switchPage('breathing-tab', this)"><i class="fa-solid fa-wind me-3"></i>Вежба за Дишење</a>
+        <a href="#" class="nav-link-custom" onclick="switchPage('bubbles-tab', this)"><i class="fa-solid fa-circle-dot me-3"></i>Пукање Меурчиња</a>
+        <a href="#" class="nav-link-custom" onclick="switchPage('punch-tab', this)"><i class="fa-solid fa-hand-fist me-3"></i>Удри го Стресот</a>
+        <a href="#" class="nav-link-custom" onclick="switchPage('catcher-tab', this)"><i class="fa-solid fa-gamepad me-3"></i>Кршач на Навики</a>
+    </nav>
+    <div class="p-3 text-center small fw-bold" style="color: #0369a1; background: #bae6fd; border-radius: 12px;">HBSC Зона 2026</div>
+</div>
+
+<!-- ГЛАВЕН КОНТЕЈНЕР -->
+<div class="main-content">
+
+    <div id="crystals-tab" class="app-page active-page">
+        <div class="gradient-banner">
+            <h2 class="fw-bold mb-1">Твојот Кристален Енергетски Баланс 💎</h2>
+            <p class="mb-0 opacity-90 fw-semibold">Мрдни ги прогрес баровите за да видиш како кристалите ја менуваат својата оригинална боја и состојба!</p>
+        </div>
+
+        <div class="app-card">
+            <h4 class="fw-bold mb-4" style="color: #0369a1;"><i class="fa-solid fa-sliders me-2"></i>Постави ги денешните активности</h4>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">🛌 Сон: <span id="lblSleepVal" class="badge badge-blue-dark">8 ч</span></label>
+                    <input type="range" class="form-range" min="4" max="12" step="0.5" value="8" id="inSleep" oninput="liveUpdateAndTrigger()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">📱 Социјални Мрежи: <span id="lblScreenVal" class="badge badge-blue-dark">3 ч</span></label>
+                    <input type="range" class="form-range" min="0" max="10" step="0.5" value="3" id="inScreen" oninput="liveUpdateAndTrigger()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">🏃 Вежбање: <span id="lblSportVal" class="badge badge-blue-dark">30 мин</span></label>
+                    <input type="range" class="form-range" min="0" max="120" step="5" value="30" id="inSport" oninput="liveUpdateAndTrigger()">
+                </div>
+            </div>
+        </div>
+
+        <div class="app-card text-center">
+            <h5 class="fw-bold mb-4 text-start" style="color: #0369a1;"><i class="fa-solid fa-chart-pie me-2"></i>Енергетски Монитор</h5>
+            <div class="crystal-deck">
+                <div class="crystal-box">
+                    <div id="crySleep" class="crystal-element">🔮</div>
+                    <div class="small mt-3 fw-bold">Регенерација<br><span id="lblSleep" class="badge badge-blue-dark mt-1">Вчитување...</span></div>
+                </div>
+                <div class="crystal-box">
+                    <div id="cryScreen" class="crystal-element">💎</div>
+                    <div class="small mt-3 fw-bold">Дигитален Штит<br><span id="lblScreen" class="badge badge-blue-dark mt-1">Вчитување...</span></div>
+                </div>
+                <div class="crystal-box">
+                    <div id="crySport" class="crystal-element">✨</div>
+                    <div class="small mt-3 fw-bold">Виталност<br><span id="lblSport" class="badge badge-blue-dark mt-1">Вчитување...</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="breathing-tab" class="app-page">
+        <div class="app-card text-center">
+            <h3 class="fw-bold mb-2" style="color: #0369a1;"><i class="fa-solid fa-wind me-2"></i>4-7-8 Смирувачко Дишење</h3>
+            <p class="text-muted fw-semibold">Идеален метод за редукција на анксиозност пред тест или испитување.</p>
+            <div class="breath-box">
+                <div id="breathBall" class="breath-circle">Кликни Старт</div>
+            </div>
+            <button class="btn btn-blue-main rounded-pill fw-bold mt-4 px-5 shadow" onclick="startBreathingExercise()">Започни Анти-стрес Тренинг</button>
+        </div>
+    </div>
+
+    <div id="bubbles-tab" class="app-page">
+        <div class="app-card text-center">
+            <h3 class="fw-bold mb-2" style="color: #0369a1;"><i class="fa-solid fa-circle-dot me-2"></i>Дигитален Bubble Wrap</h3>
+            <p class="text-muted fw-semibold">Инстантна релаксација преку физичко тактилно кршење и пукање на виртуелни меурчиња.</p>
+            <div class="bubble-grid" id="bubbleGrid"></div>
+            <button class="btn btn-outline-blue-dark rounded-pill mt-3 px-4" onclick="resetBubbles()"><i class="fa-solid fa-rotate-right me-2"></i>Нова Табла Меурчиња</button>
+        </div>
+    </div>
+
+    <div id="punch-tab" class="app-page">
+        <div class="app-card text-center">
+            <h3 class="fw-bold mb-2" style="color: #0369a1;">🥊 Ослободи се од негативната енергија</h3>
+            <p class="text-muted fw-semibold">Имаш лош ден во училиште? Симулирај исфрлање на фрустрациите на интерактивната вреќа.</p>
+            <div class="py-5">
+                <div id="punchBag" class="punch-bag" onclick="executePunch()">🥊</div>
+            </div>
+            <h4 class="fw-bold">Регистрирани силни удари: <span id="punchScore" style="color: #0284c7;">0</span></h4>
+        </div>
+    </div>
+
+    <div id="catcher-tab" class="app-page">
+        <div class="app-card text-center">
+            <h3 class="fw-bold mb-2" style="color: #0369a1;">🎮 Уништувач на Токсични Навики</h3>
+            <p class="text-muted fw-semibold">Брза рефлексна игра каде ги елиминираш негативните влијанија од секојдневието.</p>
+            <div id="gameCanvas"></div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <h5 class="fw-bold mb-0">Резултат: <span id="gameScore" style="color: #0284c7;">0</span> поени</h5>
+                <button class="btn btn-blue-main rounded-pill px-4" onclick="startGame()">Започни Игра</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let gameInterval;
+    let gameScore = 0;
+    let punches = 0;
+
+    const habitsList = [
+        "Зависност од TikTok", "0 часа Сон", "Кибер-насилство", "Енергетски пијалоци",
+        "Притисок за 5ки", "Булинг во училиште", "Прекумерно гејмање", "Токсични пријателства",
+        "Споредување со филтри", "Брза храна и грицки",
+        "Прокрастинација", "Скролање до 3 наутро", "Недоверба во себе", "Прескокнување оброци",
+        "Преголеми очекувања", "Седење пред екран цел ден", "Криење на емоциите",
+        "Социјална анксиозност", "Занемарување на реалноста"
+    ];
+
+    function switchPage(pageId, element) {
+        document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active-page'));
+        document.querySelectorAll('.nav-link-custom').forEach(l => l.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active-page');
+        element.classList.add('active');
+
+        if(pageId === 'bubbles-tab') { resetBubbles(); }
+        if(pageId !== 'catcher-tab') { clearInterval(gameInterval); }
+        if(pageId === 'crystals-tab') { triggerCrystalEngine(); }
+    }
+
+    function liveUpdateAndTrigger() {
+        const sleep = parseFloat(document.getElementById('inSleep').value);
+        const screen = parseFloat(document.getElementById('inScreen').value);
+        const sport = parseInt(document.getElementById('inSport').value);
+
+        document.getElementById('lblSleepVal').innerText = sleep + " ч";
+        document.getElementById('lblScreenVal').innerText = screen + " ч";
+        document.getElementById('lblSportVal').innerText = sport + " мин";
+
+        triggerCrystalEngine(sleep, screen, sport);
+    }
+
+    function triggerCrystalEngine(sleep = 8, screen = 3, sport = 30) {
+        const crySleep = document.getElementById('crySleep');
+        const lblSleep = document.getElementById('lblSleep');
+        crySleep.className = "crystal-element";
+
+        if (sleep >= 10.5) {
+            crySleep.classList.add('cry-state-shatter');
+            lblSleep.className = "badge bg-danger text-white mt-1";
+            lblSleep.innerText = "Премногу сон (Депресија)";
+        } else if (sleep >= 7.5 && sleep < 10.5) {
+            crySleep.classList.add('cry-state-grow', 'glow-sleep');
+            lblSleep.className = "badge bg-success text-white mt-1";
+            lblSleep.innerText = "Идеално Растење";
+        } else if (sleep <= 5.5) {
+            crySleep.classList.add('cry-state-shatter');
+            lblSleep.className = "badge bg-danger text-white mt-1";
+            lblSleep.innerText = "Срушен (Замор)";
+        } else {
+            crySleep.classList.add('cry-state-shrink');
+            lblSleep.className = "badge badge-blue-dark text-white mt-1";
+            lblSleep.innerText = "Намален сјај";
+        }
+
+        const cryScreen = document.getElementById('cryScreen');
+        const lblScreen = document.getElementById('lblScreen');
+        cryScreen.className = "crystal-element";
+
+        if (screen <= 3) {
+            cryScreen.classList.add('cry-state-grow', 'glow-screen');
+            lblScreen.className = "badge bg-success text-white mt-1";
+            lblScreen.innerText = "Силен Дигитален Штит";
+        } else if (screen >= 7) {
+            cryScreen.classList.add('cry-state-shatter');
+            lblScreen.className = "badge bg-danger text-white mt-1";
+            lblScreen.innerText = "Срушен Штит";
+        } else {
+            cryScreen.classList.add('cry-state-shrink');
+            lblScreen.className = "badge badge-blue-dark text-white mt-1";
+            lblScreen.innerText = "Ослабен Штит";
+        }
+
+        const crySport = document.getElementById('crySport');
+        const lblSport = document.getElementById('lblSport');
+        crySport.className = "crystal-element";
+
+        if (sport >= 60) {
+            crySport.classList.add('cry-state-grow', 'glow-sport');
+            lblSport.className = "badge bg-success text-white mt-1";
+            lblSport.innerText = "Максимална Виталност";
+        } else if (sport <= 15) {
+            crySport.classList.add('cry-state-shatter');
+            lblSport.className = "badge bg-danger text-white mt-1";
+            lblSport.innerText = "Искршена Виталност";
+        } else {
+            crySport.classList.add('cry-state-shrink');
+            lblSport.className = "badge badge-blue-dark text-white mt-1";
+            lblSport.innerText = "Пасивна енергија";
+        }
+    }
+
+    function startBreathingExercise() {
+        const ball = document.getElementById('breathBall');
+        let cycle = 0;
+        function run() {
+            if(cycle >= 2) { ball.innerText = "Рестарт"; ball.classList.remove('expand'); return; }
+            ball.innerText = "Вдиши..."; ball.classList.add('expand');
+            setTimeout(() => {
+                ball.innerText = "Издиши..."; ball.classList.remove('expand');
+                setTimeout(() => { cycle++; run(); }, 4000);
+            }, 4000);
+        }
+        run();
+    }
+
+    function resetBubbles() {
+        const grid = document.getElementById('bubbleGrid');
+        grid.innerHTML = '';
+        for(let i=0; i<24; i++) {
+            const b = document.createElement('div');
+            b.className = 'bubble';
+            b.onclick = function() { this.classList.add('popped'); };
+            grid.appendChild(b);
+        }
+    }
+
+    function executePunch() {
+        punches++;
+        document.getElementById('punchScore').innerText = punches;
+        const bag = document.getElementById('punchBag');
+        const angle = Math.random() > 0.5 ? 25 : -25;
+        bag.style.transform = `scale(1.3) rotate(${angle}deg)`;
+        setTimeout(() => { bag.style.transform = "scale(1) rotate(0deg)"; }, 120);
+    }
+
+    function startGame() {
+        gameScore = 0;
+        document.getElementById('gameScore').innerText = gameScore;
+        const canvas = document.getElementById('gameCanvas');
+        canvas.innerHTML = '';
+        clearInterval(gameInterval);
+
+        gameInterval = setInterval(() => {
+            const element = document.createElement('div');
+            element.className = 'falling-habit';
+            element.innerText = habitsList[Math.floor(Math.random() * habitsList.length)];
+            element.style.left = Math.random() * 75 + '%';
+            element.style.top = '0px';
+
+            let topPos = 0;
+            let animationLoop = setInterval(() => {
+                topPos += 5;
+                element.style.top = topPos + 'px';
+                if (topPos > 280) {
+                    clearInterval(animationLoop);
+                    if (element.parentNode) canvas.removeChild(element);
+                }
+            }, 35);
+
+            element.onclick = function() {
+                gameScore += 10;
+                document.getElementById('gameScore').innerText = gameScore;
+                clearInterval(animationLoop);
+                if (this.parentNode) canvas.removeChild(this);
+            };
+
+            canvas.appendChild(element);
+        }, 1100);
+    }
+
+    window.onload = function() {
+        liveUpdateAndTrigger();
+    };
+</script>
+</body>
+</html>
